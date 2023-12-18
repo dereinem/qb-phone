@@ -154,12 +154,12 @@ $(document).on('click', '.lawyer-list-call', function(e){
         ContactData: cData,
         Anonymous: QB.Phone.Data.AnonymousCall,
     }), function(status){
-        if (cData.number !== QB.Phone.Data.PlayerData.charinfo.phone) {
+        if (status.targetNumber !== QB.Phone.Data.PlayerData.charinfo.phone) {
             if (status.IsOnline) {
                 if (status.CanCall) {
                     if (!status.InCall) {
                         if (QB.Phone.Data.AnonymousCall) {
-                            QB.Phone.Notifications.Add("fas fa-phone", "Phone", "You started a anonymous call!");
+                            QB.Phone.Notifications.Add("fas fa-phone", "Phone", "Du machst einen Anonymen Anruf!");
                         }
                         $(".phone-call-outgoing").css({"display":"block"});
                         $(".phone-call-incoming").css({"display":"none"});
@@ -178,16 +178,24 @@ $(document).on('click', '.lawyer-list-call', function(e){
                     
                         QB.Phone.Data.currentApplication = "phone-call";
                     } else {
-                        QB.Phone.Notifications.Add("fas fa-phone", "Phone", "You are already connected to a call!");
+                        QB.Phone.Notifications.Add("fas fa-phone", "Phone", "Du hast bereits einen Anruf laufen!");
                     }
                 } else {
-                    QB.Phone.Notifications.Add("fas fa-phone", "Phone", "This person is already in a call");
+                    if (QB.Phone.Functions.IsEmergencyNumber(cData.number)) {
+                        QB.Phone.Notifications.Add("fas fa-phone", "Phone", "Alle Mitarbeiter sind im Gespräch. Versuche es gleich nochmal!");
+                    } else {
+                        QB.Phone.Notifications.Add("fas fa-phone", "Phone", "This person is busy!");
+                    }
                 }
             } else {
-                QB.Phone.Notifications.Add("fas fa-phone", "Phone", "This person is not available!");
+                if (QB.Phone.Functions.IsEmergencyNumber(cData.number)) {
+                    QB.Phone.Notifications.Add("fas fa-phone", "Phone", "Alle Mitarbeiter sind im Gespräch. Versuche es gleich nochmal!");
+                } else {
+                    QB.Phone.Notifications.Add("fas fa-phone", "Phone", "Die angerufene Nummer ist momentan nicht aktiv. Bitte versuche es später nochmal.");
+                }
             }
         } else {
-            QB.Phone.Notifications.Add("fas fa-phone", "Phone", "You can't call your own number!");
+            QB.Phone.Notifications.Add("fas fa-phone", "Phone", "Du kannst dich nicht selbst anrufen !");
         }
     });
 });
